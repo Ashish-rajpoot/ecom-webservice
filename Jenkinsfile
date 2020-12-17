@@ -29,9 +29,14 @@ pipeline {
                 sh 'docker image build -t ecom-webservice .'                              
             }
         } 
+        stage('Tag docker image'){
+            steps {
+                sh 'docker tag ecom-webservice ashish142/ecom-webservice:1.0.0'
+            }          
+        }
         stage('Push docker image'){
             steps {
-                sh 'sudo docker push ashish142/ecom-webservice:2.0.0'
+                sh 'sudo docker push ashish142/ecom-webservice:1.0.0'
             }          
         }
         stage('Deploy Stage') {
