@@ -30,11 +30,10 @@ pipeline {
             }
         } 
         stage('Push docker image'){
-        withCredentials([string(credentialsId: 'docker-pwd', variable: 'Dockerhubpwd')]) {
-            sh "sudo docker login -u ashish142 -p $Dockerhubpwd"
-        }      
-        sh 'sudo docker push ashish142/ecom-webservice:2.0.0'
-    }
+            steps {
+                sh 'sudo docker push ashish142/ecom-webservice:2.0.0'
+            }          
+        }
         stage('Deploy Stage') {
             steps {
                 echo 'Hello, Docker Deployment.'
