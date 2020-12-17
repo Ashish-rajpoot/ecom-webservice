@@ -19,10 +19,16 @@ pipeline {
 
         stage('mvn Build Stage') {
             steps {
-                sh 'mvn clean package -DskipTests'  
-                             
+                  echo '::::: Hello, mvn Build stage  :::::'
+                sh 'mvn clean package -DskipTests'                              
             }
-        }        
+        }  
+         stage('Docker Build Stage') {
+            steps {
+                  echo '::::: Hello, Docker Build stage  :::::'
+                sh 'docker image build -t ecom-webservice .'                              
+            }
+        }          
     }      
     
 }
