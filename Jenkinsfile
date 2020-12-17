@@ -17,9 +17,9 @@ pipeline {
             }
         }  
 
-        stage('Deploy Stage') {
+        stage('mvn Build Stage') {
             steps {
-                echo '::::: Deploy, jdk  :::::'   
+                sh 'mvn clean package -DskipTests'  
                              
             }
         }        
