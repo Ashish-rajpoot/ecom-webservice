@@ -12,15 +12,18 @@ pipeline {
         stage('Compile Stage') {
             steps {
                 echo '::::: Hello, Compile  :::::'
-                   sh 'mvn clean compile'      
-                     sh 'mvn --version'            
+                  withMaven(maven : 'maven3.6.3'){
+                    sh 'mvn clean compile'
+                }         
             }
         }  
 
         stage('mvn Build Stage') {
             steps {
                   echo '::::: Hello, mvn Build stage  :::::'
-                sh 'mvn clean package -DskipTests'                              
+                withMaven(maven : 'maven3.6.3'){
+                    sh 'mvn clean package -DskipTests'
+                }                           
             }
         }  
          stage('Docker Build Stage') {
