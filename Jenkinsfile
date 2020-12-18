@@ -21,7 +21,7 @@ pipeline {
         stage('mvn Build Stage') {
             steps {
                   echo '::::: Hello, mvn Build stage  :::::'
-                withMaven(maven : 'maven3.6.3'){
+                withMaven(maven : 'jdk8'){
                     sh 'mvn clean package -DskipTests'
                 }                           
             }
