@@ -1,6 +1,9 @@
 pipeline {
     agent any 
-
+      tools {
+    jdk 'jdk8'
+    maven 'maven3.6.3'
+  }
     triggers {
         pollSCM('* * * * *')
     }
@@ -9,18 +12,18 @@ pipeline {
         stage('Compile Stage') {
             steps {
                 echo '::::: Hello, Compile  :::::'
-                  withMaven(maven : 'maven3.6.3'){
+                //   withMaven(maven : 'maven3.6.3'){
                     sh 'mvn clean compile'
-                }         
+                // }         
             }
         }  
 
         stage('mvn Build Stage') {
             steps {
                   echo '::::: Hello, mvn Build stage  :::::'
-                withMaven(jdk : 'jdk8'){
+                // withMaven(jdk : 'jdk8'){
                     sh 'mvn clean package -DskipTests'
-                }                           
+                // }                           
             }
         }  
          stage('Docker Build Stage') {
