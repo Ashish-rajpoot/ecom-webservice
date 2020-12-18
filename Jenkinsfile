@@ -4,9 +4,6 @@ pipeline {
     triggers {
         pollSCM('* * * * *')
     }
-
-    
-
     stages {
 
         stage('Compile Stage') {
@@ -21,7 +18,7 @@ pipeline {
         stage('mvn Build Stage') {
             steps {
                   echo '::::: Hello, mvn Build stage  :::::'
-                withMaven(maven : 'jdk8'){
+                withMaven(jdk : 'jdk8'){
                     sh 'mvn clean package -DskipTests'
                 }                           
             }
