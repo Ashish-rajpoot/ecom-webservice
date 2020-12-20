@@ -22,7 +22,7 @@ Maven Based CI/CD pipeline Project
         --> CMD ["java","-jar","ecom-webservice-0.0.1-SNAPSHOT.jar"]
 3.Create a repository in git hub 
      In git console:
-     
+     Project url :https://github.com/Ashish-rajpoot/ecom-webservice.git
      --> git init // To the source folder
      --> git remote add origin <paste repository HTTPS link>
      --> git add . 
