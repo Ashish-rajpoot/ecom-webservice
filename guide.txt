@@ -1,0 +1,128 @@
+***
+Create one Ec2 Instance 
+    //Give tag name for Ec2 Instance
+    //Give the name for security group
+    //Set the tcp port number
+    //download the pem file
+    ** Make sure not to share the pem file 
+    // Go the pem file folder and Open in the terminal 
+        --> chmod 400 <pem_file_name>
+        --> Paste the ssh cmd to connect to the ec2 Instance
+    //Copy the public ip for ec2 Instance and run with jenkins tcp 8080(by Default)
+** make sure all the jenkins and docker cmd run on the ec2 connected console (root@ip)
+
+Maven Based CI/CD pipeline Project
+
+1. Build the Maven Project in Eclipse.
+2. Create one Dockerfile. 
+    //Pull openjdk:8-jdk from the docker hub site by using FROM cmd
+        --> FROM openjdk:8-jdk 
+    // Make one copy of snapshot by using COPY cmd to the targe source folder
+        --> COPY ./target/ecom-webservice-0.0.1-SNAPSHOT.jar ecom-webservice-0.0.1-SNAPSHOT.jar
+        --> CMD ["java","-jar","ecom-webservice-0.0.1-SNAPSHOT.jar"]
+3.Create a repository in git hub 
+     In git console:
+     
+     --> git init // To the source folder
+     --> git remote add origin <paste repository HTTPS link>
+     --> git add . 
+     --> git commit -m "commit"
+     --> git push origin master
+     //your source is push to git hub
+
+4. Create one jenkinsfile.
+
+pipeline {
+    agent any 
+    //Add the require tools
+      tools {
+    jdk 'JDK8'
+    maven 'maven3.6.3'
+  }
+  //Add triggers so you source code can start build to the specifice time interval
+    triggers {
+        pollSCM('* * * * *')
+    }
+    //Add the Stages
+    stages {
+        //Stage first Compile stage
+        stage('Compile Stage') {
+            steps {
+                echo '::::: Hello, Compile  :::::'  
+                //shell cmd for compileing maven              
+                sh 'mvn clean compile'                      
+            }
+        }  
+        //Stage Second Build stage
+        stage('mvn Build Stage') {
+            steps {
+                echo '::::: Hello, mvn Build stage  :::::'
+                 //shell cmd for clean package  
+                sh 'mvn clean package -DskipTests'                       
+            }
+        }  
+        //Stage Third Docker image Build stage
+         stage('Docker Build Stage') {
+            steps {
+                echo '::::: Hello, Docker Build stage  :::::'
+                 //shell cmd for build docker image
+                 $ sudo docker image build -t <img-name>
+                sh 'docker image build -t ecom-webservice .'                              
+            }
+        } 
+        //Stage Forth add tag Docker image so you can push image to docker repository       
+        stage('Tag docker image'){
+            steps {
+                 $ sudo docker image build -t <image-name> username/<image-name:version>
+                sh 'docker tag ecom-webservice ashish142/ecom-webservice:1.0.0'
+            }          
+        }
+        //Stage Fifth Push Docker image to docker repository 
+        //Make sure that you have logedin to docker hub using you Username and Password 
+        //$ sudo docker login
+        //Enter you ceredential and proceed
+        stage('Push docker image'){
+            steps {
+                $ sudo docker push username/<image-name:version>
+                sh 'sudo docker push ashish142/ecom-webservice:1.0.0'
+            }          
+        }
+        //Stage six run Docker container 
+        stage('Deploy Stage') {
+            steps {
+                echo 'Hello, Docker Deployment.'
+                sh '''
+                // If existing container is running it will be closed 
+                 (if  [ $(docker ps -a | grep ecom-webservice | cut -d " " -f1) ]; then \
+                        echo $(docker rm -f ecom-webservice); \
+                        echo "---------------- successfully removed ecom-webservice ----------------"
+                     else \
+                    echo OK; \
+                 fi;);
+                 // and Create the new container and Deploy at Desire Project
+                 // Make sure to bind the server port number provided in application in "/src/main/resources" folder
+                 $ sudo docker container run --restart always --name <container-name> -p 0000:0000 -d <image-name>
+            docker container run --restart always --name ecom-webservice -p 8082:8081 -d ecom-webservice
+            '''
+            }
+        }    
+    }      
+    
+}
+
+5. Setup jenkins:
+   
+        //setup manage plugins 
+            //Maven integration plugin,aws Ec2 plugin etc. 
+        //setup global configration
+             -->set JDK8 //make sure to provide Oracle ceredential
+            --> set maven3.6.3
+    Create one pipeline job
+        // Go to the job configration
+            // Add description
+            // In pipeline section
+            // select --> pipeline with SCM
+            // Provide the source code repository link
+            APPLY & SAVE
+
+Fianlly Build the job
